@@ -26,22 +26,98 @@ textRect.center = (400, 75)
 # <------------------------------------------------------GLOBAL VARIABLES------------------------------------------------------>
 turn = 0
 pawns = []
+dead_crow = 0
 
 # Run until the user asks to quit
 running = True
 dragging = False
-interim_pos = (0,0)
+cr_interim_pos = (0,0)
+vr_interim_pos = (0,0)
+
+# <------------------------------------------------------Position Decleration and Data Sets--------------------------------------->
+pos_1 = (398,236)
+pos_2 = (228,360)
+pos_3 = (357,360)
+pos_4 = (438,360)
+pos_5 = (568,360)
+pos_6 = (332,436)
+pos_7 = (463,436)
+pos_8 = (398,484)
+pos_9 = (293,560)
+pos_10 = (502,560)
+
+adj_dict = {
+    pos_1: [pos_3, pos_4],
+    pos_2: [pos_3, pos_6],
+    pos_3: [pos_2, pos_4, pos_6, pos_1],
+    pos_4: [pos_3, pos_5, pos_7, pos_1],
+    pos_5: [pos_4, pos_7],
+    pos_6: [pos_2, pos_3, pos_8, pos_9],
+    pos_7: [pos_4, pos_5, pos_8, pos_10],
+    pos_8: [pos_10, pos_9, pos_6, pos_7],
+    pos_9: [pos_6, pos_8],
+    pos_10: [pos_7, pos_8]
+}
+
+lines = [[] for _ in range(5)]
+
+lines[0] = [pos_1, pos_3, pos_6, pos_9]
+lines[1] = [pos_1, pos_4, pos_7, pos_10]
+lines[2] = [pos_2, pos_3, pos_4, pos_5]
+lines[3] = [pos_2, pos_6, pos_8, pos_10]
+lines[4] = [pos_5, pos_7, pos_8, pos_9]
 
 # <------------------------------------------------------HELPER FUNCTION------------------------------------------------------->
 
-def check(coord,color):
+def cr_check(coord,color):
     for pawn in pawns:
         if pawn[0] == coord:
             if color == pawn[1]:
                 return 1
             else:
                 return 0
+    if cr_interim_pos == (0,0):
+        return 2
+    if dragging:
+        if coord in adj_dict[cr_interim_pos]:
+            return 2
+        else:
+            return -1
     return 2
+
+def find_list_with_points(lines, point1, point2):
+    for i, line in enumerate(lines):
+        if point1 in line and point2 in line:
+            index_point1 = line.index(point1)
+            index_point2 = line.index(point2)
+            return line, index_point1, index_point2
+    return -1
+
+def vr_check(coord,color):
+    global dead_crow
+    for pawn in pawns:
+        if pawn[0] == coord:
+            if color == pawn[1]:
+                return 1
+            else:
+                return 0
+    if vr_interim_pos == (0,0):
+        return 2
+    result = find_list_with_points(lines,coord,vr_interim_pos)
+    if result == (-1):
+        return -1
+    else:
+        req_line,index_1,index_2= find_list_with_points(lines,coord,vr_interim_pos)
+        if (abs(index_1 - index_2 ) == 3):
+            return -1
+        else:
+            if (index_1 + index_2) % 2 == 0:
+                if cr_check(req_line[int((index_1+index_2)/2)],opponent_1.color) == 1:
+                    dead_crow = dead_crow + 1
+                    pawns.remove((req_line[int((index_1+index_2)/2)],opponent_1.color))
+                else:
+                    return -1
+            return 2
 
 def getCoord():
     x, y = pygame.mouse.get_pos()
@@ -80,6 +156,43 @@ def draw(circles):
     for circle in circles:
         pygame.draw.circle(screen, circle[1], circle[0], 12)
 
+def check_win():
+    global running
+    if dead_crow >= 4:      
+        font_1 = pygame.font.Font(None, 36)
+        text_1 = font_1.render("Opponent_2 Wins!", True, (0, 0, 0))
+        textRect_1 = text_1.get_rect()
+        textRect_1.center = (400, 150)
+        screen.blit(text_1,textRect_1)
+        pygame.display.update()
+        pygame.time.delay(2000)
+        running = False
+    else:
+        win_flag = 0
+        for i, line in enumerate(lines):
+            if vr_interim_pos in line:
+                index = line.index(vr_interim_pos)
+                if index == 1 or index == 2:
+                    win_flag = all(cr_check(line_point, opponent_1.color) == 1 and line_point != vr_interim_pos for line_point in line[1:])
+                    if not win_flag:
+                        break
+                else:
+                    win_flag = cr_check(line[1], opponent_1.color) == cr_check(line[2], opponent_1.color) == 1
+                    if not win_flag:
+                        break
+
+        if win_flag == 1:
+            print("Yes")
+            font_1 = pygame.font.Font(None, 36)
+            text_1 = font_1.render("Opponent_1 Wins!", True, (0, 0, 0))
+            textRect_1 = text_1.get_rect()
+            textRect_1.center = (400, 150)
+            screen.blit(text_1,textRect_1)
+            pygame.display.update()
+            pygame.time.delay(2000)
+            running = False
+
+
 
 # <------------------------------------------------------GAME VARIABLES-------------------------------------------------------->
 
@@ -90,25 +203,25 @@ class crow:
 
     def cr_movement(self,event):
         global dragging
-        global interim_pos
+        global cr_interim_pos
         global turn
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = getCoord()
-            static = check(pos,self.color)
+            static = cr_check(pos,self.color)
             if static == 1:
                 dragging = True
-                interim_pos = pos
+                cr_interim_pos = pos
                 pawns.remove((pos,self.color))
         if event.type == pygame.MOUSEBUTTONUP:
             pos = getCoord()
-            static = check(pos,self.color)
+            static = cr_check(pos,self.color)
             if dragging and pos != None:
                 if static == 2:
                     temp = (pos,self.color)
                     pawns.append(temp)
                     turn = (turn + 1) % 2
                 else:
-                    temp = (interim_pos,self.color)
+                    temp = (cr_interim_pos,self.color)
                     pawns.append(temp)
                 dragging = False
             elif self.count < 7 and pos != None:
@@ -126,25 +239,25 @@ class vulture:
 
     def vr_movement(self,event):
         global dragging
-        global interim_pos
+        global vr_interim_pos
         global turn
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = getCoord()
-            static = check(pos,self.color)
+            static = vr_check(pos,self.color)
             if static == 1:
                 dragging = True
-                interim_pos = pos
+                vr_interim_pos = pos
                 pawns.remove((pos,self.color))
         if event.type == pygame.MOUSEBUTTONUP:
             pos = getCoord()
-            static = check(pos,self.color)
+            static = vr_check(pos,self.color)
             if dragging and pos != None:
                 if static == 2:
                     temp = (pos,self.color)
                     pawns.append(temp)
                     turn = (turn + 1) % 2
                 else:
-                    temp = (interim_pos,self.color)
+                    temp = (vr_interim_pos,self.color)
                     pawns.append(temp)
                 dragging = False
             elif self.count < 1 and pos != None:
@@ -153,6 +266,7 @@ class vulture:
                     temp = (pos,self.color)
                     pawns.append(temp)
                     turn = (turn + 1) % 2
+                    vr_interim_pos = pos
 
 
 opponent_1 = crow((127, 255, 212),0)
@@ -176,11 +290,14 @@ while running:
             opponent_1.cr_movement(event)
         else:
             opponent_2.vr_movement(event)
+        # set the center of the rectangular object.vement(event)
     
     if dragging:
         continue
     
     draw(pawns)
+    pygame.display.update()
+    check_win()
     # # get pawns co-ordinate
     # x, y = pygame.mouse.get_pos()
     # print(x)
@@ -188,10 +305,6 @@ while running:
             
     
     # must to make changes visible
-    pygame.display.update()
-
-
-
 
 # Done! Time to quit.
 pygame.quit()
