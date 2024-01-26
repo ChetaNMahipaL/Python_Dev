@@ -39,6 +39,12 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
+
+    # get pawns co-ordinate
+    # Get mouse coordinates
+    x, y = pygame.mouse.get_pos()
+    print(x)
+    print(y)
     # must to make changes visible
     pygame.display.update()
 
