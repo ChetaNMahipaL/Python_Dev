@@ -182,7 +182,7 @@ def check_win():
                         break
 
         if win_flag == 1:
-            print("Yes")
+            # print("Yes")
             font_1 = pygame.font.Font(None, 36)
             text_1 = font_1.render("Opponent_1 Wins!", True, (0, 0, 0))
             textRect_1 = text_1.get_rect()
@@ -255,6 +255,7 @@ class vulture:
                 if static == 2:
                     temp = (pos,self.color)
                     pawns.append(temp)
+                    vr_interim_pos = pos
                     turn = (turn + 1) % 2
                 else:
                     temp = (vr_interim_pos,self.color)
@@ -285,7 +286,8 @@ while running:
         # Did the user click the window close button?
         if event.type == pygame.QUIT:
             running = False
-
+        
+        # print(turn)
         if(turn == 0):
             opponent_1.cr_movement(event)
         else:
