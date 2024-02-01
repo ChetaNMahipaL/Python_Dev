@@ -93,7 +93,7 @@ def find_list_with_points(lines, point1, point2):
             return line, index_point1, index_point2
     return -1
 
-def vr_check(coord,color):
+def vr_check(coord,color,drag):
     global dead_crow
     for pawn in pawns:
         if pawn[0] == coord:
@@ -101,6 +101,8 @@ def vr_check(coord,color):
                 return 1
             else:
                 return 0
+    if drag == True:
+        return -1
     if vr_interim_pos == (0,0):
         return 2
     result = find_list_with_points(lines,coord,vr_interim_pos)
@@ -243,15 +245,17 @@ class vulture:
         global turn
         if event.type == pygame.MOUSEBUTTONDOWN:
             pos = getCoord()
-            static = vr_check(pos,self.color)
+            static = vr_check(pos,self.color,True)
+            # print(static)
             if static == 1:
                 dragging = True
                 vr_interim_pos = pos
                 pawns.remove((pos,self.color))
         if event.type == pygame.MOUSEBUTTONUP:
             pos = getCoord()
-            static = vr_check(pos,self.color)
             if dragging and pos != None:
+                static = vr_check(pos,self.color,False)
+                # print(static)
                 if static == 2:
                     temp = (pos,self.color)
                     pawns.append(temp)
@@ -262,6 +266,7 @@ class vulture:
                     pawns.append(temp)
                 dragging = False
             elif self.count < 1 and pos != None:
+                static = vr_check(pos,self.color,False)
                 if static == 2:
                     self.count = self.count + 1
                     temp = (pos,self.color)
