@@ -1,9 +1,14 @@
 from prettytable import PrettyTable
 import subprocess as sp
+import csv
+from csv import DictReader
+
+
 
 class Enteries:
     def __init__(self):
         self.rows = []
+        self.fields=['FirstName','LastName','Roll_No','CourseName','Semester','ExamType','TotalMarks','ScoredMarks']
     
     def add_entry(self,info):
         self.rows.append(info)
@@ -33,29 +38,46 @@ class Enteries:
         for entry in rem_param:
             self.rows.remove(entry)
 
+    def load_file(self,filename):
+        try:
+            with open(filename, 'r') as f:
+                dict_reader = DictReader(f)
+                for entry in dict_reader:
+                    self.rows.append(entry)
+        except Exception as e:
+            print(f"Error occurred while loading file")
+
+    def save_data(self,filename):
+        try:
+            with open(filename,'w') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=self.fields)
+                writer.writeheader()
+                writer.writerows(self.rows)
+        except Exception as e:
+            print(f"Error occurred while saving file")
+
 mdirect = Enteries()
 # Menu based input
 
 def add_entry():
     dict = {}
-    temp = input("Enter First Name: ")
-    dict["FirstName"] = temp
-    temp = input("Enter Last Name: ")
-    dict["LastName"] = temp
-    temp = input("Enter Roll Number: ")
-    dict["Roll_No"] = temp
-    temp = input("Enter name of the course: ")
-    dict["CourseName"] = temp
-    temp = input("Enter semester in which it was taken: ")
-    dict["Semester"] = temp
-    temp = input("Enter type of examination: ")
-    dict["ExamType"] = temp
-    temp = input("Enter maximum marks of examination: ")
-    dict["TotalMarks"] = temp
-    temp = input("Enter marks obtained: ")
-    dict["ScoredMarks"] = temp
-    # print(dict)
-    mdirect.add_entry(dict)
+    
+    dict["FirstName"] = input("Enter First Name: ")
+    dict["LastName"] = input("Enter Last Name: ")
+    try:
+        dict["Roll_No"] = int(input("Enter Roll Number: "))
+    except ValueError:
+        print("Error: Invalid data type for Roll Number. Please enter a valid integer.")
+        return
+    dict["CourseName"] = input("Enter name of the Course: ")
+    dict["Semester"] = input("Enter Semester in which it was taken: ")
+    dict["ExamType"] = input("Enter type of Examination: ")
+    try:
+        dict["TotalMarks"] = int(input("Enter Maximum Marks of examination: "))
+        dict["ScoredMarks"] = int(input("Enter Marks Obtained: "))
+    except ValueError:
+        print("Error: Invalid data type for Total Marks or Scored Marks. Please enter valid integers.")
+        return
 
 def params():
     print("Keys are as follow:\nFirstName, LastName, Roll_No, CourseName, Semester, ExamType, TotalMarks, ScoredMarks ")
@@ -70,6 +92,13 @@ def params():
         peak = val.split(",")
         search_dict[peak[0]]=peak[1]
     return mdirect.search(search_dict)
+
+def load_csv(argum):
+    filepath = input("Enter file path including filename: ")
+    if argum == 6:
+        mdirect.load_file(filepath)
+    if argum == 7:
+        mdirect.save_data(filepath)
 
 flag = 0
 
@@ -94,20 +123,29 @@ while(1):
         add_entry()
     if(arg_input == 2):
         ans_search = params()
-        mdirect.display_data(ans_search)
+        if ans_search == []:
+            print("No Matching Entry Found!")
+        else:
+            mdirect.display_data(ans_search)
     if(arg_input == 3):
         ans_search = params()
-        temp_1 = input("Enter key of the cell: ")
-        temp_2 = input("Enter new value: ")
-        mdirect.edit(ans_search,temp_1,temp_2)
+        if ans_search == []:
+            print("No Matching Entry Found!")
+        else:
+            temp_1 = input("Enter key of the cell: ")
+            temp_2 = input("Enter new value: ")
+            mdirect.edit(ans_search,temp_1,temp_2)
     if(arg_input == 4):
         ans_search = params()
-        mdirect.remove_entry(ans_search)
+        if ans_search == []:
+            print("No Matching Entry Found!")
+        else:
+            mdirect.remove_entry(ans_search)
     if(arg_input == 5):
         mdirect.display_data(mdirect.rows)
     if(arg_input == 6):
-        pass
+        load_csv(arg_input)
     if(arg_input == 7):
-        pass
+        load_csv(arg_input)
     if(arg_input == 0):
         break
