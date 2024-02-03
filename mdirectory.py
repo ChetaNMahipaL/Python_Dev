@@ -1,7 +1,8 @@
 from prettytable import PrettyTable
+import subprocess as sp
 
 class Enteries:
-    def __init___(self):
+    def __init__(self):
         self.rows = []
     
     def add_entry(self,info):
@@ -23,14 +24,42 @@ class Enteries:
     def remove(self,rem_param):
         pass
 
-
-
-
-
 mdirect = Enteries()
 # Menu based input
 
+def add_entry():
+    dict = {}
+    temp = input("Enter First Name: ")
+    dict["FirstName"] = temp
+    temp = input("Enter Last Name: ")
+    dict["LastName"] = temp
+    temp = input("Enter Roll Number: ")
+    dict["Roll_No"] = temp
+    temp = input("Enter name of the course: ")
+    dict["CourseName"] = temp
+    temp = input("Enter semester in which it was taken: ")
+    dict["Semester"] = temp
+    temp = input("Enter type of examination: ")
+    dict["ExamType"] = temp
+    temp = input("Enter maximum marks of examination: ")
+    dict["TotalMarks"] = temp
+    temp = input("Enter marks obtained: ")
+    dict["ScoredMarks"] = temp
+    print(dict)
+    mdirect.add_entry(dict)
+
+
+
+
+
+
+flag = 0
+
 while(1):
+    if flag > 0:
+        temp_1 = input("Press Enter to Continue")
+        tmp = sp.call('clear', shell=True)
+    flag = flag + 1
     print("Enter 1 to add new entry")
     print("Enter 2 for searching entry")
     print("Enter 3 for editing entry")
@@ -43,7 +72,7 @@ while(1):
     arg_input = int(arg_input)
 
     if(arg_input == 1):
-        pass
+        add_entry()
     if(arg_input == 2):
         pass
     if(arg_input == 3):

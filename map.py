@@ -1,5 +1,6 @@
 import math
 import matplotlib.pyplot as plt
+import subprocess as sp
 
 class Co_ordinate:
     def __init__(self, x, y, dist):
@@ -129,8 +130,13 @@ def process_input():
 # 3. For getting relative position
 # 4. For getting total distance travelled
 # 5. For exiting program
+flag = 0
 
 while(1):
+    if flag > 0:
+        temp = input("Press Enter to Continue")
+        tmp = sp.call('clear', shell=True)
+    flag = flag + 1
     print("Enter 1 to give input")
     print("Enter 2 for obtaining path of P")
     print("Enter 3 for current location of P with respect to S")
