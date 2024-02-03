@@ -11,7 +11,7 @@ class Enteries:
     def display_data(self,table_rep):
         table = PrettyTable()
         table.field_names = ["First Name","Last Name","Roll Number","Course Name","Semester","Exam Type","Total Marks","Scored Marks"]
-        for entry in table_rep.rows:
+        for entry in table_rep:
             table.add_row([entry["FirstName"],entry["LastName"],entry["Roll_No"],entry["CourseName"],entry["Semester"],entry["ExamType"],entry["TotalMarks"],entry["ScoredMarks"]])
         print(table)
     
@@ -24,9 +24,10 @@ class Enteries:
         return search_results
 
     def edit(self,ed_param,key,nval):
-        for entry in self.rows:
-            if all(entry[k] == v for k, v in ed_param.items()):
-                entry[key] = nval
+        for ed_params in ed_param:
+            for entry in self.rows:
+                if all(entry[k] == v for k, v in ed_params.items()):
+                    entry[key] = nval
 
     def remove_entry(self,rem_param):
         for entry in rem_param:
@@ -53,7 +54,7 @@ def add_entry():
     dict["TotalMarks"] = temp
     temp = input("Enter marks obtained: ")
     dict["ScoredMarks"] = temp
-    print(dict)
+    # print(dict)
     mdirect.add_entry(dict)
 
 def params():
@@ -84,7 +85,7 @@ while(1):
     print("Enter 5 to display directory")
     print("Enter 6 to load csv file")
     print("Enter 7 to store the database")
-    print("enter 0 to exit the menu")
+    print("Enter 0 to exit the menu")
     
     arg_input = input("Enter the command: ")
     arg_input = int(arg_input)
