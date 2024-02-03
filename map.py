@@ -97,6 +97,7 @@ line_graph = path_diag(0,0)
 # 2. Distance can be in m.m. or c.m. both as input but result will be in c.m.
 
 def process_input():
+    print("The codes for direction are:\nNorth - N\nSouth - S\nEast - E\nWest - W\nNorth-East - NE\nNorth-West - NW\nSouth-East - SE\nSouth-West - SW")
     dist_in = input("Enter the input in specified format: ") # space between units , magnitude and direction
     x = dist_in.split()                           # Example input 2.5 mm N
     mag_dist = float(x[0])
