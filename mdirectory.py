@@ -8,21 +8,29 @@ class Enteries:
     def add_entry(self,info):
         self.rows.append(info)
 
-    def display_data(self):
+    def display_data(self,table_rep):
         table = PrettyTable()
         table.field_names = ["First Name","Last Name","Roll Number","Course Name","Semester","Exam Type","Total Marks","Scored Marks"]
-        for entry in self.rows:
+        for entry in table_rep.rows:
             table.add_row([entry["FirstName"],entry["LastName"],entry["Roll_No"],entry["CourseName"],entry["Semester"],entry["ExamType"],entry["TotalMarks"],entry["ScoredMarks"]])
         print(table)
     
     def search(self,srch_param):
-        pass
+        search_results = []
+        for entry in self.rows:
+            match = all(entry[key] == value for key, value in srch_param.items())
+            if match:
+                search_results.append(entry)
+        return search_results
 
-    def edit(self,ed_param):
-        pass
+    def edit(self,ed_param,key,nval):
+        for entry in self.rows:
+            if all(entry[k] == v for k, v in ed_param.items()):
+                entry[key] = nval
 
-    def remove(self,rem_param):
-        pass
+    def remove_entry(self,rem_param):
+        for entry in rem_param:
+            self.rows.remove(entry)
 
 mdirect = Enteries()
 # Menu based input
@@ -48,10 +56,19 @@ def add_entry():
     print(dict)
     mdirect.add_entry(dict)
 
-
-
-
-
+def params():
+    print("Keys are as follow:\nFirstName, LastName, Roll_No, CourseName, Semester, ExamType, TotalMarks, ScoredMarks ")
+    temp = input("Enter the parameters to query on: ") 
+    # enter key first then value wihtout space and each parmater space separated
+    # example FirstName,Rajat LastName,Garg and so on
+    # only 1 value per key
+    # search parameters will be in conjunction
+    x = temp.split()
+    search_dict = {}
+    for val in x:
+        peak = val.split(",")
+        search_dict[peak[0]]=peak[1]
+    return mdirect.search(search_dict)
 
 flag = 0
 
@@ -66,6 +83,7 @@ while(1):
     print("Enter 4 for removing entry")
     print("Enter 5 to display directory")
     print("Enter 6 to load csv file")
+    print("Enter 7 to store the database")
     print("enter 0 to exit the menu")
     
     arg_input = input("Enter the command: ")
@@ -74,14 +92,21 @@ while(1):
     if(arg_input == 1):
         add_entry()
     if(arg_input == 2):
-        pass
+        ans_search = params()
+        mdirect.display_data(ans_search)
     if(arg_input == 3):
-        pass
+        ans_search = params()
+        temp_1 = input("Enter key of the cell: ")
+        temp_2 = input("Enter new value: ")
+        mdirect.edit(ans_search,temp_1,temp_2)
     if(arg_input == 4):
-        pass
+        ans_search = params()
+        mdirect.remove_entry(ans_search)
     if(arg_input == 5):
-        mdirect.display_data()
+        mdirect.display_data(mdirect.rows)
     if(arg_input == 6):
+        pass
+    if(arg_input == 7):
         pass
     if(arg_input == 0):
         break
