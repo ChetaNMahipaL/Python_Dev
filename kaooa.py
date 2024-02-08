@@ -218,7 +218,7 @@ class crow:
             pos = getCoord()
             static = cr_check(pos,self.color)
             if dragging and pos != None:
-                if static == 2:
+                if static == 2 and self.count >= 7:
                     temp = (pos,self.color)
                     pawns.append(temp)
                     turn = (turn + 1) % 2
@@ -226,7 +226,7 @@ class crow:
                     temp = (cr_interim_pos,self.color)
                     pawns.append(temp)
                 dragging = False
-            elif self.count < 7 and pos != None:
+            elif self.count < 7 and pos != None and dragging == False:
                 if static == 2:
                     self.count = self.count + 1
                     temp = (pos,self.color)
