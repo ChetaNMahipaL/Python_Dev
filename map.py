@@ -42,7 +42,7 @@ class Co_ordinate:
             return "On S"
         elif angle_S == 90:      # North
             return "North of S"
-        elif angle_S == 270:   # South
+        elif angle_S == -90:   # South
             return "South of S"
         elif angle_S == 0:    # East
             return "East of S"
@@ -50,9 +50,9 @@ class Co_ordinate:
             return "West of S"
         elif angle_S == 45:    # North-East
             return "North-East of S"
-        elif angle_S == 315:   # South-East
+        elif angle_S == -45:   # South-East
             return "South-East of S"
-        elif angle_S == 225:   # South-West
+        elif angle_S == -135:   # South-West
             return "South-West of S"
         elif angle_S == 135:   # North-West
             return "North-West of S"
