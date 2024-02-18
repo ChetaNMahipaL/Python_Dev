@@ -31,7 +31,7 @@ class Co_ordinate:
             self.y = self.y + distance / math.sqrt(2)
 
     def total_dist(self, distance):
-        self.dist = self.dist + distance
+        self.dist = self.dist + abs(distance)
 
     def ret_tdist(self):
         return self.dist
